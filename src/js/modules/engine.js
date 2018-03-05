@@ -1,32 +1,48 @@
+import symbols from './symbols';
+
 function getRandomInt(min, max) {
 	return min + Math.floor(Math.random() * (max - min + 1));
 }
 
 class SlotMacnineEngine {
 	constructor(config) {
+		const self = this;
 		this.config = {
 			width: config.width || 3,
 			height: config.height || 3,
-			availableSymbols: config.symbols || ['A', 'K', 'Q', 'J', 'W']
+			availableSymbols: symbols
 		};
+
 		this.reels = [];
 		this.winlines = [];
 
+		this.state = {
+			privateState: {
+				balance: 1000
+			},
+			publicState: {
+				reels: this.reels,
+				winlines: this.winlines
+			}
+		};
+
 		this.api = {
+			getConfig: () => {
+				this.generateReels.call(this);
+				return Promise.resolve(this.state);
+
+			},
 			spin: (linesToWin) => {
 				this.generateReels.call(this, linesToWin);
 				this.countWinLines.call(this);
-				return Promise.resolve({
-					reels: this.reels,
-					winlines: this.winlines
-				});
+				return Promise.resolve(self.state);
 			}
 		};
 	}
 
 	getRandomSymbol() {
 		const index = getRandomInt(0, this.config.availableSymbols.length - 1);
-		return this.config.availableSymbols[index];
+		return this.config.availableSymbols[index].key;
 	}
 
 	generateSymbolOnReel(reel) {

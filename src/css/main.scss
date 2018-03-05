@@ -10,17 +10,18 @@
 }
 
 .application {
-    min-width: 300px;
-    padding: 10px;
+    width: 480px;
 	margin: 10px;
-    border: 1px dotted lightgrey;
+	//border: 1px dotted lightgrey;
+	box-sizing: border-box;
 }
 
 .symbol {
-    padding: 15px;
-    font-size: 16px;
-    font-weight: bold;
-    text-align: center;
+	text-align: center;
+	width: 160px;
+	img {
+		width: 100%;
+	}
 }
 
 .controls {
@@ -32,9 +33,15 @@
     color: red;
 }
 
+.row {
+	margin-left: 0;
+	margin-right: 0;
+}
+
 .col {
 	position: relative;
 	overflow: hidden;
+	padding: 0;
 }
 
 .reel {
@@ -46,8 +53,6 @@
 .reel-above-first, .reel-above-second {
 	display: block;
 	position: absolute;
-	width: calc(100% - 30px);
-    padding: 0 15px;
     transform: translate3d(0, -100%, 0);
 	color: #000;	
 }
