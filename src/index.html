@@ -1,0 +1,52 @@
+<html>
+
+<head>
+
+</head>
+
+<body>
+
+	<div class="application">
+		<div id="slot-machine">
+			<div class="reels row">
+				<div class="col" v-for="(reel, reelIndex) in reels">
+
+					<div class="reel-container" v-bind:class="{ 'reel-spinning' : slotMachine.reels[reelIndex].spinning}">
+						<div class="reel-above-first">
+							<div class="symbol" v-for="symbol in config.symbols">
+								{{ symbol }}
+							</div>
+							<div class="symbol" v-for="(symbol, index) in reel">
+								{{ symbol }}
+							</div>
+						</div>
+						<div class="reel-above-second">
+							<div class="symbol" v-for="symbol in config.symbols">
+								{{ symbol }}
+							</div>
+							<div class="symbol" v-for="(symbol, index) in reel">
+								{{ symbol }}
+							</div>
+						</div>
+						<div class="reel">
+							<div class="symbol" v-for="(symbol, index) in reel" v-bind:class="{ 'win-line' : winLines.indexOf(index)> -1 }"> {{ symbol }}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="controls">
+				<button class="btn btn-danger" v-on:click="toggleSpinAnimation">Toggle Spin Animation</button>
+				<button class="btn btn-dark" v-on:click="toggleRandomSpin">Random Spin</button>
+				<button class="btn btn-dark" v-on:click="toogleWinSpin">Win Spin</button>
+			</div>
+			
+		</div>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+
+</body>
+
+</html>

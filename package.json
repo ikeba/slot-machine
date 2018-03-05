@@ -1,0 +1,43 @@
+{
+  "name": "slot-machine",
+  "version": "1.0.0",
+  "description": "SLot Machine for Innovecs",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack --progress --mode development",
+    "watch": "webpack -- watch --progress --mode development§§",
+    "start": "webpack-dev-server --mode development"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ikeba/slot-machine.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ikeba/slot-machine/issues"
+  },
+  "homepage": "https://github.com/ikeba/slot-machine#readme",
+  "devDependencies": {
+    "eslint": "^4.18.2",
+    "eslint-plugin-vue": "^4.3.0",
+    "webpack-cli": "^2.0.10"
+  },
+  "dependencies": {
+    "babel-core": "^6.26.0",
+    "babel-eslint": "^8.2.2",
+    "babel-loader": "^7.1.3",
+    "babel-preset-es2015": "^6.24.1",
+    "bootstrap": "^4.0.0",
+    "copy-webpack-plugin": "^4.5.0",
+    "css-loader": "^0.28.10",
+    "extract-text-webpack-plugin": "^4.0.0-beta.0",
+    "html-webpack-plugin": "^3.0.4",
+    "node-sass": "^4.7.2",
+    "sass-loader": "^6.0.7",
+    "style-loader": "^0.20.2",
+    "webpack": "^4.1.0",
+    "webpack-dev-server": "^3.1.0",
+    "webpack-notifier": "^1.5.1"
+  }
+}

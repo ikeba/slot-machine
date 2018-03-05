@@ -1,0 +1,72 @@
+@import '../../node_modules/bootstrap/scss/bootstrap.scss';
+
+@keyframes reel-spin {
+	0% {
+		transform: translate3d(0, -50%, 0);
+	}
+	100% {
+		transform: translate3d(0, 100%, 0)
+	}
+}
+
+.application {
+    min-width: 300px;
+    padding: 10px;
+	margin: 10px;
+    border: 1px dotted lightgrey;
+}
+
+.symbol {
+    padding: 15px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.controls {
+    margin-top: 25px;
+    text-align: center;
+}
+
+.win-line {
+    color: red;
+}
+
+.col {
+	position: relative;
+	overflow: hidden;
+}
+
+.reel {
+	position: relative;
+	transform: translate3d(0, 0, 0);
+	opacity: 1;
+}
+
+.reel-above-first, .reel-above-second {
+	display: block;
+	position: absolute;
+	width: calc(100% - 30px);
+    padding: 0 15px;
+    transform: translate3d(0, -100%, 0);
+	color: #000;	
+}
+
+
+
+.reel-spinning {
+	.reel {
+		opacity: 0;
+	}
+
+	.reel-above-first {
+		display: block;
+		animation: reel-spin .5s linear infinite;
+	}
+	
+	.reel-above-second {
+		display: block;
+		animation: reel-spin .5s linear infinite;
+		animation-delay: 0.25s;
+	}
+}
