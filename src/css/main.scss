@@ -50,28 +50,25 @@
 	opacity: 1;
 }
 
-.reel-above-first, .reel-above-second {
+.reel-above {
 	display: block;
 	position: absolute;
-    transform: translate3d(0, -100%, 0);
-	color: #000;	
+	opacity: 0;
+	transform: translate3d(0, 0, 0);
+	color: #000;
+	bottom: 0;	
 }
-
-
 
 .reel-spinning {
 	.reel {
 		opacity: 0;
 	}
+	.reel-above {
+		opacity: 1;
+	}
+}
 
-	.reel-above-first {
-		display: block;
-		animation: reel-spin .5s linear infinite;
-	}
-	
-	.reel-above-second {
-		display: block;
-		animation: reel-spin .5s linear infinite;
-		animation-delay: 0.25s;
-	}
+.disabled {
+	opacity: 0.8;
+	pointer-events: none;
 }

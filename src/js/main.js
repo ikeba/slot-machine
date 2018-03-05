@@ -10,7 +10,6 @@ const slotMachineStates = {
 	SPIN: 'spin'
 };
 
-
 new Vue({
 	el: '#slot-machine',
 	data: {
@@ -28,24 +27,39 @@ new Vue({
 		balance: 0,
 		winLines: [],
 		slotMachine: {
-			reels: []
+			reels: [],
+			state: slotMachineStates.IDLE
 		}
 	},
 	created: function() {
 		this.engine = new SlotMacnineEngine(this.config);
-		this.engine.api.getConfig().then((data) => {
-			this.reels = data.publicState.reels;
-			this.winLines = data.publicState.winlines;
-			for (let i = 0; i < this.reels.length; i++) {
-				this.slotMachine.reels.push({
-					spinning: false
-				});
-			}
-		});
+		this.engine.api.getConfig()
+			.then((data) => {
+				this.reels = data.publicState.reels;
+				this.winLines = data.publicState.winlines;
+				for (let i = 0; i < this.reels.length; i++) {
+					this.slotMachine.reels.push({
+						spinning: false,
+						position: 0
+					});
+				}
+			});
+	},
+	computed: {
+		state: function() {
+			return this.slotMachine.state;
+		},
+		busy: function() {
+			return this.slotMachine.state !== slotMachineStates.IDLE;
+		}
 	},
 	methods: {
 		spin: function(winlines = []) {
-			// Start spinning reels
+			if (this.slotMachine.state !== slotMachineStates.IDLE) {
+				return;
+			}
+			this.slotMachine.state = slotMachineStates.SPIN;
+			
 			this.toggleSpinAnimation()
 				// Get reels from backend
 				.then(() => this.engine.api.spin(winlines))
@@ -64,16 +78,17 @@ new Vue({
 				.then(() => this.toggleSpinAnimation())
 				// Set machine status
 				.then(() => {
-					console.log('animation end');
 					this.slotMachine.state = slotMachineStates.IDLE;
 				});
 		},
 
 		winSpin: function() {
+			if (this.slotMachine.state !== slotMachineStates.IDLE) {
+				return;
+			}
 			const linesToWin = [getRandomInt(0, this.config.height - 1)];
 			this.spin(linesToWin);
 		},
-
 
 		toggleSpinAnimation: function() {
 			const reels = this.slotMachine.reels;
@@ -94,7 +109,6 @@ new Vue({
 						}, reels[i].delay);
 					});
 				})());
-
 			}
 
 			return Promise.all(timeouts);
@@ -105,6 +119,30 @@ new Vue({
 				if (this.config.symbols[i].key === key) {
 					return this.config.symbols[i].url;
 				}
+			}
+		}
+	},
+	watch: {
+		state: function(newValue) {
+			const self = this;
+			function animate() {
+				for (let i = 0; i < self.slotMachine.reels.length; i++) {
+					const reel = self.slotMachine.reels[i];
+					if (reel.spinning) {
+						reel.position += 40;
+						if (reel.position >= self.config.symbols.length * 160 - 3 * 160) {
+							reel.position = 0;
+						}
+					} else {
+						reel.position = 0;
+					}
+				}
+				if (self.state === slotMachineStates.SPIN) {
+					requestAnimationFrame(animate);
+				}
+			}
+			if (newValue === slotMachineStates.SPIN) {
+				animate();
 			}
 		}
 	}

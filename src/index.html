@@ -9,28 +9,18 @@
 	<div class="application">
 		<div id="slot-machine">
 			<div class="reels row">
-				<div class="col" v-for="(reel, reelIndex) in reels">
-					<div class="reel-container" v-bind:class="{ 'reel-spinning' : slotMachine.reels[reelIndex].spinning}">
-						<div class="reel-above-first">
+				<div class="col" v-for="(reel, reelIndex) in reels" :style="'transform: translateX(-' + reelIndex + 'px'">
+					
+					<div class="reel-container" :class="{ 'reel-spinning' : slotMachine.reels[reelIndex].spinning}">
+						
+						<div class="reel-above" :style="'transform: translate3d(0, ' + slotMachine.reels[reelIndex].position + 'px, 0);'">
 							<div class="symbol" v-for="symbol in config.symbols">
 								<img :src="'assets/symbols/' + symbol.url" alt="{{symbol.key}}">
-							</div>
-							<div class="symbol" v-for="(symbol, index) in reel">
-								<img :src="'assets/symbols/' + getSymbolUrl(symbol)" alt="{{symbol.key}}">
-							</div>
-						</div>
-						<div class="reel-above-second">
-							<div class="symbol" v-for="symbol in config.symbols">
-								<img :src="'assets/symbols/' + symbol.url" alt="{{symbol.key}}">
-							</div>
-							<div class="symbol" v-for="(symbol, index) in reel">
-								{{symbol}}
-								<img :src="'assets/symbols/' + getSymbolUrl(symbol)" alt="{{symbol.key}}">
 							</div>
 						</div>
 
 						<div class="reel">
-							<div class="symbol" v-for="(symbol, index) in reel" v-bind:class="{ 'win-line' : winLines.indexOf(index)> -1 }">
+							<div class="symbol" v-for="(symbol, index) in reel" :class="{ 'win-line' : winLines.indexOf(index)> -1 }">
 								<img :src="'assets/symbols/' + getSymbolUrl(symbol)" alt="{{symbol.key}}">
 							</div>
 						</div>
@@ -39,7 +29,7 @@
 				</div>
 			</div>
 
-			<div class="controls">
+			<div class="controls" :class="{'disabled' : busy}">
 				<button class="btn btn-dark" v-on:click="spin">Spin</button>
 				<button class="btn btn-dark" v-on:click="winSpin">Win Spin</button>
 			</div>
