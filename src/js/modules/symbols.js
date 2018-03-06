@@ -42,7 +42,7 @@ export default [
 		value: 100
 	},
 	{
-		ey: 'STAR',
+		key: 'STAR',
 		url: 'star.png',
 		type: 'basic',
 		value: 100

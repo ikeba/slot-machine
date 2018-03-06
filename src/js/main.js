@@ -7,60 +7,91 @@ function getRandomInt(min, max) {
 
 const slotMachineStates = {
 	IDLE: 'idle',
-	SPIN: 'spin'
+	SPIN: 'spin',
+	STOPPING: 'stopping'
 };
 
-new Vue({
+class Reel {
+	constructor() {
+		this.spinning = false;
+		this.position = 0;
+		this.symbols = [];
+	}
+	spin() {
+		this.spinning = true;
+	}
+	stop() {
+		this.spinning = false;
+	}
+}
+
+function parseData(slotMachine, data) {
+	console.log(data);
+	slotMachine.balance = data.privateState.balance;
+
+	for (let i = 0; i < slotMachine.reels.length; i++) {
+		slotMachine.reels[i].symbols = data.publicState.reels[i];
+	}
+}
+
+function startAnimation(slotMachine) {
+	const reels = slotMachine.reels;
+	for (let i = 0; i < reels.length; i++) {
+		reels[i].spin();
+	}
+	return Promise.resolve();
+}
+
+const app = new Vue({
 	el: '#slot-machine',
 	data: {
 		config: {
-			width: 3,
+			width: 4,
 			height: 3,
 			symbols,
+			speed: 20,
 			serverDelay: {
-				min: 500,
-				max: 1500
+				min: 2000,
+				max: 4000
 			}
 		},
+		states: slotMachineStates,
 		engine: null,
-		reels: [],
-		balance: 0,
-		winLines: [],
 		slotMachine: {
+			balance: 0,
 			reels: [],
 			state: slotMachineStates.IDLE
 		}
 	},
+
 	created: function() {
 		this.engine = new SlotMacnineEngine(this.config);
+
+		for (let i = 0; i < this.config.width; i++) {
+			this.slotMachine.reels.push(new Reel());
+		}
+
 		this.engine.api.getConfig()
-			.then((data) => {
-				this.reels = data.publicState.reels;
-				this.winLines = data.publicState.winlines;
-				for (let i = 0; i < this.reels.length; i++) {
-					this.slotMachine.reels.push({
-						spinning: false,
-						position: 0
-					});
-				}
-			});
+			.then((data) => parseData(this.slotMachine, data));
 	},
+
 	computed: {
 		state: function() {
 			return this.slotMachine.state;
 		},
-		busy: function() {
-			return this.slotMachine.state !== slotMachineStates.IDLE;
+		slotMachineHeight: function() {
+			return this.config.height * 160;
 		}
 	},
 	methods: {
-		spin: function(winlines = []) {
+		spin: function(winlines) {
 			if (this.slotMachine.state !== slotMachineStates.IDLE) {
 				return;
 			}
+
 			this.slotMachine.state = slotMachineStates.SPIN;
-			
-			this.toggleSpinAnimation()
+
+			startAnimation(this.slotMachine)
 				// Get reels from backend
 				.then(() => this.engine.api.spin(winlines))
 				// Spin reels to emulate server response
@@ -68,17 +99,14 @@ new Vue({
 					const spinningTimeout = getRandomInt(this.config.serverDelay.min, this.config.serverDelay.max);
 					return new Promise((resolve) => {
 						setTimeout(() => {
-							this.reels = data.publicState.reels;
-							this.winLines = data.publicState.winlines;
+							parseData(this.slotMachine, data);
 							resolve();
 						}, spinningTimeout);
 					});
 				})
-				// Stop reel animation
-				.then(() => this.toggleSpinAnimation())
 				// Set machine status
 				.then(() => {
-					this.slotMachine.state = slotMachineStates.IDLE;
+					this.slotMachine.state = slotMachineStates.STOPPING;
 				});
 		},
 
@@ -88,30 +116,6 @@ new Vue({
 			}
 			const linesToWin = [getRandomInt(0, this.config.height - 1)];
 			this.spin(linesToWin);
-		},
-
-		toggleSpinAnimation: function() {
-			const reels = this.slotMachine.reels;
-			const timeouts = [];
-
-			for (let i = 0; i < reels.length; i++) {
-				if (i === 0) {
-					reels[i].delay = 0;
-				} else {
-					reels[i].delay = getRandomInt(reels[i - 1].delay, reels[i - 1].delay + this.config.serverDelay.min);
-				}
-
-				timeouts.push((() => {
-					return new Promise((resolve) => {
-						setTimeout(() => {
-							reels[i].spinning = !reels[i].spinning;
-							resolve();
-						}, reels[i].delay);
-					});
-				})());
-			}
-
-			return Promise.all(timeouts);
 		},
 
 		getSymbolUrl: function(key) {
@@ -125,24 +129,39 @@ new Vue({
 	watch: {
 		state: function(newValue) {
 			const self = this;
-			function animate() {
+			function spin() {
 				for (let i = 0; i < self.slotMachine.reels.length; i++) {
 					const reel = self.slotMachine.reels[i];
 					if (reel.spinning) {
-						reel.position += 40;
-						if (reel.position >= self.config.symbols.length * 160 - 3 * 160) {
-							reel.position = 0;
+						reel.position += self.config.speed;
+						
+						if (self.state === slotMachineStates.SPIN) {
+							if (reel.position >= self.config.symbols.length * 160) {
+								reel.position = 0;
+							}
+						} else if (self.state === slotMachineStates.STOPPING) {
+							const symbolsReelLength = self.config.symbols.length * 160 * 2;
+							
+							if (reel.position % symbolsReelLength === 0) {
+								reel.stop();
+							}
 						}
-					} else {
-						reel.position = 0;
-					}
+					} 
 				}
-				if (self.state === slotMachineStates.SPIN) {
-					requestAnimationFrame(animate);
+
+				const spinningReelsCount = self.slotMachine.reels.filter((el) => el.spinning).length;
+				
+				if (spinningReelsCount === 0) {
+					self.slotMachine.state = slotMachineStates.IDLE;
+				}
+
+				if (self.state !== slotMachineStates.IDLE) {
+					requestAnimationFrame(spin);
 				}
 			}
+
 			if (newValue === slotMachineStates.SPIN) {
-				animate();
+				spin();
 			}
 		}
 	}

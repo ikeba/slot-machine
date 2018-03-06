@@ -10,7 +10,7 @@
 }
 
 .application {
-    width: 480px;
+   // width: 480px;
 	margin: 10px;
 	//border: 1px dotted lightgrey;
 	box-sizing: border-box;
@@ -42,6 +42,7 @@
 	position: relative;
 	overflow: hidden;
 	padding: 0;
+	max-width: 160px;
 }
 
 .reel {
@@ -53,19 +54,9 @@
 .reel-above {
 	display: block;
 	position: absolute;
-	opacity: 0;
 	transform: translate3d(0, 0, 0);
 	color: #000;
 	bottom: 0;	
-}
-
-.reel-spinning {
-	.reel {
-		opacity: 0;
-	}
-	.reel-above {
-		opacity: 1;
-	}
 }
 
 .disabled {

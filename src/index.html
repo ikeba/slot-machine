@@ -8,28 +8,37 @@
 
 	<div class="application">
 		<div id="slot-machine">
-			<div class="reels row">
-				<div class="col" v-for="(reel, reelIndex) in reels" :style="'transform: translateX(-' + reelIndex + 'px'">
-					
+			<div class="reels row" :style="'height: ' + slotMachineHeight + 'px'">
+				<div class="col" v-for="(reel, reelIndex) in slotMachine.reels" :style="'transform: translateX(-' + reelIndex + 'px'">
+				
+
 					<div class="reel-container" :class="{ 'reel-spinning' : slotMachine.reels[reelIndex].spinning}">
-						
+
 						<div class="reel-above" :style="'transform: translate3d(0, ' + slotMachine.reels[reelIndex].position + 'px, 0);'">
+							<div class="symbol" v-for="(symbol, index) in reel.symbols">
+								<img :src="'assets/symbols/' + getSymbolUrl(symbol)" alt="{{symbol.key}}">
+							</div>
+							<div class="symbol" v-for="symbol in config.symbols">
+								<img :src="'assets/symbols/' + symbol.url" alt="{{symbol.key}}">
+							</div>
 							<div class="symbol" v-for="symbol in config.symbols">
 								<img :src="'assets/symbols/' + symbol.url" alt="{{symbol.key}}">
 							</div>
 						</div>
 
-						<div class="reel">
-							<div class="symbol" v-for="(symbol, index) in reel" :class="{ 'win-line' : winLines.indexOf(index)> -1 }">
+						<div class="reel" v-if="slotMachine.state === states.IDLE">
+							<div class="symbol" v-for="(symbol, index) in reel.symbols">
 								<img :src="'assets/symbols/' + getSymbolUrl(symbol)" alt="{{symbol.key}}">
 							</div>
 						</div>
 
 					</div>
+					
+					
 				</div>
 			</div>
 
-			<div class="controls" :class="{'disabled' : busy}">
+			<div class="controls" :class="{'disabled' : slotMachine.state !== states.IDLE}">
 				<button class="btn btn-dark" v-on:click="spin">Spin</button>
 				<button class="btn btn-dark" v-on:click="winSpin">Win Spin</button>
 			</div>
