@@ -9,10 +9,12 @@
 	}
 }
 
+body {
+	background-color: #ccc;
+}
+
 .application {
-   // width: 480px;
 	margin: 10px;
-	//border: 1px dotted lightgrey;
 	box-sizing: border-box;
 }
 
@@ -21,6 +23,26 @@
 	width: 160px;
 	img {
 		width: 100%;
+	}
+}
+
+#slot-machine {
+	margin: 0 auto;
+}
+
+.debug {
+	table {
+		width: 100%;
+		font-size: 12px;
+		td {
+			padding: 2px;
+			border: 1px solid darkgray;
+			color: darkgray;
+			width: 50%;
+		}
+		.position {
+			text-align: right;
+		}
 	}
 }
 
@@ -45,10 +67,8 @@
 	max-width: 160px;
 }
 
-.reel {
-	position: relative;
-	transform: translate3d(0, 0, 0);
-	opacity: 1;
+.reels .col {
+	background: #58595b;
 }
 
 .reel-above {

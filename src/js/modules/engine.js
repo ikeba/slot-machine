@@ -1,15 +1,16 @@
 import symbols from './symbols';
+import config from '../config';
 
 function getRandomInt(min, max) {
 	return min + Math.floor(Math.random() * (max - min + 1));
 }
 
 class SlotMacnineEngine {
-	constructor(config) {
+	constructor() {
 		const self = this;
 		this.config = {
-			width: config.width || 3,
-			height: config.height || 3,
+			width: config.slotMachine.width || 3,
+			height: config.slotMachine.height || 3,
 			availableSymbols: symbols
 		};
 
